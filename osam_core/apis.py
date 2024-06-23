@@ -7,7 +7,7 @@ from loguru import logger
 
 from . import types
 
-running_model: Optional[types.ModelBase] = None
+running_model: Optional[types.Model] = None
 registered_model_types: List[Type] = []
 
 

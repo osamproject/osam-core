@@ -11,7 +11,7 @@ class ImageEmbedding(pydantic.BaseModel):
     original_width: int
     embedding: np.ndarray
 
-    @pydantic.validator("embedding")
+    @pydantic.field_validator("embedding")
     def validate_embedding(cls, embedding):
         if embedding.ndim != 3:
             raise ValueError(

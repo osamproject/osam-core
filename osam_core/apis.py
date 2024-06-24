@@ -2,8 +2,6 @@ from typing import List
 from typing import Optional
 from typing import Type
 
-import imgviz
-import numpy as np
 from loguru import logger
 
 from . import types
@@ -46,33 +44,5 @@ def generate(request: types.GenerateRequest) -> types.GenerateResponse:
         running_model = model_type()
     assert running_model is not None
 
-    if request.image_embedding is None:
-        if request.image is None:
-            raise ValueError("Either image_embedding or image must be given")
-        image: np.ndarray = request.image
-        image_embedding: types.ImageEmbedding = running_model.encode_image(image=image)
-    else:
-        image_embedding = request.image_embedding
-
-    if request.prompt is None:
-        height, width = image.shape[:2]
-        prompt = types.Prompt(
-            points=np.array([[width / 2, height / 2]], dtype=np.float32),
-            point_labels=np.array([1], dtype=np.int32),
-        )
-        logger.warning(
-            "Prompt is not given, so using the center point as prompt: {prompt!r}",
-            prompt=prompt,
-        )
-    else:
-        prompt = request.prompt
-
-    mask: np.ndarray = running_model.generate_mask(
-        image_embedding=image_embedding, prompt=prompt
-    )
-    return types.GenerateResponse(
-        model=request.model,
-        image_embedding=image_embedding,
-        masks=[mask],
-        bounding_boxes=[imgviz.instances.mask_to_bbox([mask])[0].astype(int).tolist()],
-    )
+    response: types.GenerateResponse = running_model.generate(request=request)
+    return response

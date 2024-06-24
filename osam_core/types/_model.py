@@ -8,8 +8,9 @@ from loguru import logger
 
 from .. import _contextlib
 from ._blob import Blob
+from ._generate import GenerateRequest
+from ._generate import GenerateResponse
 from ._image_embedding import ImageEmbedding
-from ._prompt import Prompt
 
 
 class Model:
@@ -19,6 +20,8 @@ class Model:
     _inference_sessions: Dict[str, onnxruntime.InferenceSession]
 
     def __init__(self):
+        logger.debug("Initializing model {name}", name=self.name)
+
         self.pull()
 
         providers = None
@@ -95,7 +98,5 @@ class Model:
     def encode_image(self, image: np.ndarray) -> ImageEmbedding:
         raise NotImplementedError
 
-    def generate_mask(
-        self, image_embedding: ImageEmbedding, prompt: Prompt
-    ) -> np.ndarray:
+    def generate(self, request: GenerateRequest) -> GenerateResponse:
         raise NotImplementedError

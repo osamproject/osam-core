@@ -2,6 +2,7 @@ from typing import List
 from typing import Optional
 from typing import Type
 
+import imgviz
 import numpy as np
 from loguru import logger
 
@@ -70,5 +71,8 @@ def generate(request: types.GenerateRequest) -> types.GenerateResponse:
         image_embedding=image_embedding, prompt=prompt
     )
     return types.GenerateResponse(
-        model=request.model, image_embedding=image_embedding, mask=mask
+        model=request.model,
+        image_embedding=image_embedding,
+        masks=[mask],
+        bounding_boxes=[imgviz.instances.mask_to_bbox([mask])[0].astype(int).tolist()],
     )

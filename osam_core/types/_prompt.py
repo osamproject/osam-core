@@ -1,4 +1,5 @@
 from typing import List
+from typing import Optional
 from typing import Type
 from typing import Union
 
@@ -9,8 +10,9 @@ import pydantic
 class Prompt(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(arbitrary_types_allowed=True)
 
-    points: np.ndarray
-    point_labels: np.ndarray
+    points: Optional[np.ndarray] = pydantic.Field(default=None)
+    point_labels: Optional[np.ndarray] = pydantic.Field(default=None)
+    texts: Optional[List[str]] = pydantic.Field(default=None)
 
     @pydantic.field_serializer("points")
     def _serialize_points(self: "Prompt", points: np.ndarray) -> List[List[float]]:
@@ -41,10 +43,19 @@ class Prompt(pydantic.BaseModel):
         return point_labels
 
     @pydantic.model_validator(mode="after")
-    @classmethod
-    def _validate_prompt(cls: Type, value: "Prompt"):
-        if value.points.shape[0] != value.point_labels.shape[0]:
+    def _validate_prompt(self) -> "Prompt":
+        if self.points is None and self.point_labels is None:
+            if self.texts is None:
+                raise ValueError(
+                    "texts must be provided when points and point_labels "
+                    "are not provided"
+                )
+        elif (
+            self.points is None
+            or self.point_labels is None
+            or self.points.shape[0] != self.point_labels.shape[0]
+        ):
             raise ValueError(
                 "points and point_labels must have the same number of rows"
             )
-        return value
+        return self

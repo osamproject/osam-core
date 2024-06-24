@@ -1,3 +1,4 @@
+from typing import List
 from typing import Optional
 from typing import Union
 
@@ -32,8 +33,20 @@ class GenerateResponse(pydantic.BaseModel):
 
     model: str
     image_embedding: ImageEmbedding
-    mask: np.ndarray
+    masks: List[np.ndarray]
+    bounding_boxes: List[List[int]]
+    texts: Optional[List[str]] = pydantic.Field(default=None)
 
-    @pydantic.field_serializer("mask")
-    def serialize_mask(self, mask: np.ndarray) -> str:
-        return _json.image_ndarray_to_b64data(ndarray=mask)
+    @pydantic.field_validator("masks")
+    def validate_masks(cls, masks: List[np.ndarray]) -> List[np.ndarray]:
+        for mask in masks:
+            if mask.dtype != bool:
+                raise ValueError("Masks must be boolean arrays")
+        return masks
+
+    @pydantic.field_serializer("masks")
+    def serialize_masks(self, masks: List[np.ndarray]) -> List[str]:
+        return [
+            _json.image_ndarray_to_b64data(ndarray=mask.view(np.uint8) * 255)
+            for mask in masks
+        ]

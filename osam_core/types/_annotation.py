@@ -10,7 +10,7 @@ from ._bounding_box import BoundingBox
 class Annotation(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(arbitrary_types_allowed=True)
 
-    bounding_box: BoundingBox
+    bounding_box: Optional[BoundingBox] = pydantic.Field(default=None)
     text: Optional[str] = pydantic.Field(default=None)
     score: Optional[float] = pydantic.Field(default=None)
     mask: Optional[np.ndarray] = pydantic.Field(default=None)

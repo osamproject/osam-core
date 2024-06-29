@@ -32,20 +32,25 @@ class GenerateResponse(pydantic.BaseModel):
     model_config = pydantic.ConfigDict(arbitrary_types_allowed=True)
 
     model: str
-    image_embedding: ImageEmbedding
-    masks: List[np.ndarray]
     bounding_boxes: List[List[int]]
+    image_embedding: Optional[ImageEmbedding] = pydantic.Field(default=None)
+    masks: Optional[List[np.ndarray]] = pydantic.Field(default=None)
     texts: Optional[List[str]] = pydantic.Field(default=None)
 
     @pydantic.field_validator("masks")
-    def validate_masks(cls, masks: List[np.ndarray]) -> List[np.ndarray]:
+    def validate_masks(
+        cls, masks: Optional[List[np.ndarray]]
+    ) -> Optional[List[np.ndarray]]:
+        if masks is None:
+            return None
+
         for mask in masks:
             if mask.dtype != bool:
                 raise ValueError("Masks must be boolean arrays")
         return masks
 
     @pydantic.field_serializer("masks")
-    def serialize_masks(self, masks: List[np.ndarray]) -> List[str]:
+    def serialize_masks(self, masks: Optional[List[np.ndarray]]) -> Optional[List[str]]:
         return [
             _json.image_ndarray_to_b64data(ndarray=mask.view(np.uint8) * 255)
             for mask in masks

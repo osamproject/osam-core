@@ -1,4 +1,3 @@
-from typing import List
 from typing import Optional
 
 import numpy as np
@@ -17,9 +16,7 @@ class Annotation(pydantic.BaseModel):
     mask: Optional[np.ndarray] = pydantic.Field(default=None)
 
     @pydantic.field_validator("mask")
-    def validate_mask(
-        cls, mask: Optional[np.ndarray]
-    ) -> Optional[np.ndarray]:
+    def validate_mask(cls, mask: Optional[np.ndarray]) -> Optional[np.ndarray]:
         if mask is None:
             return None
         if mask.dtype != bool:

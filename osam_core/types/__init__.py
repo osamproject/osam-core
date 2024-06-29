@@ -1,8 +1,8 @@
 import warnings
 
 from ._annotation import Annotation  # noqa: F401
-from ._bounding_box import BoundingBox  # noqa: F401
 from ._blob import Blob  # noqa: F401
+from ._bounding_box import BoundingBox  # noqa: F401
 from ._generate import GenerateRequest  # noqa: F401
 from ._generate import GenerateResponse  # noqa: F401
 from ._image_embedding import ImageEmbedding  # noqa: F401

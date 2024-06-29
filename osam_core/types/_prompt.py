@@ -14,6 +14,10 @@ class Prompt(pydantic.BaseModel):
     point_labels: Optional[np.ndarray] = pydantic.Field(default=None)
     texts: Optional[List[str]] = pydantic.Field(default=None)
 
+    iou_threshold: Optional[float] = pydantic.Field(default=0.5)
+    score_threshold: Optional[float] = pydantic.Field(default=0.1)
+    max_annotations: Optional[int] = pydantic.Field(default=100)
+
     @pydantic.field_serializer("points")
     def _serialize_points(self: "Prompt", points: np.ndarray) -> List[List[float]]:
         return points.tolist()

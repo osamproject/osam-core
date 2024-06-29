@@ -26,6 +26,7 @@ class Prompt(pydantic.BaseModel):
     def _serialize_point_labels(self: "Prompt", point_labels: np.ndarray) -> List[int]:
         return point_labels.tolist()
 
+    @pydantic.field_validator("points", mode="before")
     @classmethod
     def _validate_points(cls: Type, points: Union[list, np.ndarray]):
         if isinstance(points, list):
@@ -36,6 +37,7 @@ class Prompt(pydantic.BaseModel):
             raise ValueError("points must have 2 columns")
         return points
 
+    @pydantic.field_validator("point_labels", mode="before")
     @classmethod
     def _validate_point_labels(cls: Type, point_labels: Union[list, np.ndarray]):
         if isinstance(point_labels, list):

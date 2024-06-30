@@ -25,4 +25,6 @@ class Annotation(pydantic.BaseModel):
 
     @pydantic.field_serializer("mask")
     def serialize_mask(self, mask: Optional[np.ndarray]) -> Optional[str]:
+        if mask is None:
+            return None
         return _json.image_ndarray_to_b64data(ndarray=mask.view(np.uint8) * 255)
